@@ -1,8 +1,6 @@
 // FIXME: Make me compile! Diff budget: 1 line.
 
-// I AM NOT DONE
-
 pub fn main() {
-    let x = 10;
+    let mut y = 10; let x = &mut y;
     *x = 20;
 }
