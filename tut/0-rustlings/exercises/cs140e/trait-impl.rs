@@ -1,7 +1,5 @@
 // FIXME: Make me pass! Diff budget: 25 lines.
 
-// I AM NOT DONE
-
 #[derive(Debug)]
 enum Duration {
     MilliSeconds(u64),
@@ -15,15 +13,15 @@ impl From<&Duration> for u64 {
         match *dur {
             Duration::MilliSeconds(n) => n,
             Duration::Seconds(n) => n as u64 * 1000,
-            Duration::Minutes(n) => n as u64 * 60
+            Duration::Minutes(n) => n as u64 * 60 * 1000
         }
     }
 }
 
 impl PartialEq for Duration {
     fn eq(&self, other: &Self) -> bool {
-        let x: u64 = self;
-        let y: u64 = other;
+        let x: u64 = u64::from(self);
+        let y: u64 = u64::from(other);
         x == y
     }
 }
