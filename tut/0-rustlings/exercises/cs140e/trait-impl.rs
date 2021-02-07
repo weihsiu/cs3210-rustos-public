@@ -10,6 +10,23 @@ enum Duration {
 }
 
 // What traits does `Duration` need to implement?
+impl From<&Duration> for u64 {
+    fn from(dur: &Duration) -> Self {
+        match *dur {
+            Duration::MilliSeconds(n) => n,
+            Duration::Seconds(n) => n as u64 * 1000,
+            Duration::Minutes(n) => n as u64 * 60
+        }
+    }
+}
+
+impl PartialEq for Duration {
+    fn eq(&self, other: &Self) -> bool {
+        let x: u64 = self;
+        let y: u64 = other;
+        x == y
+    }
+}
 
 #[test]
 fn traits() {

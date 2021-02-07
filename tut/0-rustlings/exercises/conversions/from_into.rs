@@ -38,11 +38,11 @@ impl From<&str> for Person {
             Some(name) => match ps.next() {
                 Some(n) => match n.parse::<usize>() {
                     Ok(age) => Person { name: name.to_string(), age },
-                    _ => Default::default()
+                    _ => Person::default()
                 },
-                _ => Default::default()
+                _ => Person::default()
             },
-            _ => Default::default()
+            _ => Person::default()
         }
     }
 }
