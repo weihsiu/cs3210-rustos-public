@@ -1,6 +1,4 @@
 // FIXME: Make me compile. Diff budget: 12 line additions and 2 characters.
-
-// I AM NOT DONE
 use std::fmt;
 
 #[derive(Debug)]
@@ -11,12 +9,23 @@ impl fmt::Display for ErrorA {
         write!(f, "ErrorA")
     }
 }
+impl From<ErrorA> for Error {
+    fn from(e: ErrorA) -> Self {
+        Error::A(e)
+    }
+}
+
 #[derive(Debug)]
 struct ErrorB;
 impl std::error::Error for ErrorB {}
 impl fmt::Display for ErrorB {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "ErrorB")
+    }
+}
+impl From<ErrorB> for Error {
+    fn from(e: ErrorB) -> Self {
+        Error::B(e)
     }
 }
 
@@ -29,9 +38,9 @@ impl std::error::Error for Error {}
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self {
-            A(e) => format!("A({})", )
+            Error::A(e) => write!(f, "A({})", e),
+            Error::B(e) => write!(f, "B({})", e)
         }
-        write!(f, format!(""))
     }
 }
 
@@ -46,7 +55,9 @@ fn do_b() -> Result<u32, ErrorB> {
 }
 
 fn do_both() -> Result<(u16, u32), Error> {
-    Ok((do_a(), do_b()))
+    let a = do_a()?;
+    let b = do_b()?;
+    Ok((a, b))
 }
 
 fn main() {}
