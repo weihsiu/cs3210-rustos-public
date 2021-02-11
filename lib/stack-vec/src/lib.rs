@@ -26,7 +26,10 @@ impl<'a, T: 'a> StackVec<'a, T> {
     /// store. The returned `StackVec` will be able to hold `storage.len()`
     /// values.
     pub fn new(storage: &'a mut [T]) -> StackVec<'a, T> {
-        unimplemented!()
+        StackVec {
+            storage,
+            len: 0
+        }
     }
 
     /// Constructs a new `StackVec<T>` using `storage` as the backing store. The
@@ -38,19 +41,24 @@ impl<'a, T: 'a> StackVec<'a, T> {
     ///
     /// Panics if `len > storage.len()`.
     pub fn with_len(storage: &'a mut [T], len: usize) -> StackVec<'a, T> {
-        unimplemented!()
+        StackVec {
+            storage,
+            len
+        }
     }
 
     /// Returns the number of elements this vector can hold.
     pub fn capacity(&self) -> usize {
-        unimplemented!()
+        self.storage.len()
     }
 
     /// Shortens the vector, keeping the first `len` elements. If `len` is
     /// greater than the vector's current length, this has no effect. Note that
     /// this method has no effect on the capacity of the vector.
     pub fn truncate(&mut self, len: usize) {
-        unimplemented!()
+        if len < self.len {
+            self.len = len
+        }
     }
 
     /// Extracts a slice containing the entire vector, consuming `self`.
@@ -58,33 +66,33 @@ impl<'a, T: 'a> StackVec<'a, T> {
     /// Note that the returned slice's length will be the length of this vector,
     /// _not_ the length of the original backing storage.
     pub fn into_slice(self) -> &'a mut [T] {
-        unimplemented!()
+        self.storage.split_at_mut(self.len).0
     }
 
     /// Extracts a slice containing the entire vector.
     pub fn as_slice(&self) -> &[T] {
-        unimplemented!()
+        self.storage.split_at(self.len).0
     }
 
     /// Extracts a mutable slice of the entire vector.
     pub fn as_mut_slice(&mut self) -> &mut [T] {
-        unimplemented!()
+        self.storage.split_at_mut(self.len).0
     }
 
     /// Returns the number of elements in the vector, also referred to as its
     /// 'length'.
     pub fn len(&self) -> usize {
-        unimplemented!()
+        self.len
     }
 
     /// Returns true if the vector contains no elements.
     pub fn is_empty(&self) -> bool {
-        unimplemented!()
+        self.len == 0
     }
 
     /// Returns true if the vector is at capacity.
     pub fn is_full(&self) -> bool {
-        unimplemented!()
+        self.len == self.storage.len()
     }
 
     /// Appends `value` to the back of this vector if the vector is not full.
@@ -94,7 +102,12 @@ impl<'a, T: 'a> StackVec<'a, T> {
     /// If this vector is full, an `Err` is returned. Otherwise, `Ok` is
     /// returned.
     pub fn push(&mut self, value: T) -> Result<(), ()> {
-        unimplemented!()
+        if self.storage.len() < self.len {
+            (*self.storage)[self.len] = value;
+            Ok(())
+        } else {
+            Err(())
+        }
     }
 }
 
@@ -102,9 +115,35 @@ impl<'a, T: Clone + 'a> StackVec<'a, T> {
     /// If this vector is not empty, removes the last element from this vector
     /// by cloning it and returns it. Otherwise returns `None`.
     pub fn pop(&mut self) -> Option<T> {
-        unimplemented!()
+        if self.len > 0 {
+            self.len -= 1;
+            Some(self.storage[self.len].clone())
+        } else {
+            None
+        }
     }
 }
 
 // FIXME: Implement `Deref`, `DerefMut`, and `IntoIterator` for `StackVec`.
 // FIXME: Implement IntoIterator` for `&StackVec`.
+
+impl<T> Deref for StackVec<'_, T> {
+    type Target = [T];
+    fn deref(&self) -> &Self::Target {
+        self.as_slice()
+    }
+}
+
+impl<T> DerefMut for StackVec<'_, T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.as_mut_slice()
+    }
+}
+
+impl<T> IntoIterator for StackVec<'_, T> {
+    type Item = T;
+    type IntoIter = slice::IntoIterator<Item = Self::Item>;
+    fn into_iter(self) -> Self::IntoIter {
+        self.into_slice().into_iter()
+    }
+}
