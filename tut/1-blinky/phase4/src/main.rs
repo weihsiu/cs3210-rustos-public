@@ -25,8 +25,6 @@ fn spin_sleep_ms(ms: usize) {
 //   enter: /mnt/sdcard
 unsafe fn kmain() -> ! {
     // FIXME: STEP 1: Set GPIO Pin 16 as output.
-    let fsel1 = GPIO_FSEL1.read_volatile();
-    let mask = !(0b111u32 << 18);
     GPIO_FSEL1.write_volatile(1 << 18);
     // FIXME: STEP 2: Continuously set and clear GPIO 16.
     loop {
