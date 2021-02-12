@@ -142,8 +142,16 @@ impl<T> DerefMut for StackVec<'_, T> {
 
 impl<T> IntoIterator for StackVec<'_, T> {
     type Item = T;
-    type IntoIter = slice::IntoIterator<Item = Self::Item>;
+    type IntoIter = ???;
     fn into_iter(self) -> Self::IntoIter {
-        self.into_slice().into_iter()
+        self
+    }
+}
+
+impl<'a, T> IntoIterator for &'a StackVec<'a, T> {
+    type Item = &'a T;
+    type IntoIter = slice::Iter<'a, T>;
+    fn into_iter(self) -> Self::IntoIter {
+        self.as_slice().iter()
     }
 }
